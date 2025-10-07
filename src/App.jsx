@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./styles.css"; // 👈 importa las clases limpias
 
 // Cambiá esto por el endpoint real cuando lo tengas:
-const ENDPOINT = "http://127.0.0.1:8000/alerts";
+const ENDPOINT = "/alerts.json"; // o "http://127.0.0.1:8000/alerts"
 
 export default function App() {
   const [items, setItems] = useState([]);
