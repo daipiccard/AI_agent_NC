@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.transacciones.transaction_ingestor.model.Transaction;
+import com.transacciones.transaction_ingestor.model.Transaccion;
 import com.transacciones.transaction_ingestor.service.TransactionService;
 
 /**
@@ -31,9 +31,9 @@ public class TransactionController {
     @ResponseStatus(HttpStatus.CREATED) // Código de respuesta 201
     public String ingestTransaction(
         // @Valid activa las reglas de validación definidas en la clase Transaction (Requisito 2)
-        @RequestBody @Valid Transaction transaction
+        @RequestBody @Valid Transaccion transaction
     ) {
-        Transaction savedTransaction = transactionService.ingestAndSave(transaction);
+        Transaccion savedTransaction = transactionService.ingestAndSave(transaction);
         return String.format("Transacción %s guardada exitosamente en la base de datos.", savedTransaction.getIdTransaccion());
     }
 }
