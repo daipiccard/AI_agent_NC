@@ -3,7 +3,7 @@ package com.transacciones.transaction_ingestor.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.transacciones.transaction_ingestor.model.Transaction;
+import com.transacciones.transaction_ingestor.model.Transaccion;
 import com.transacciones.transaction_ingestor.repository.TransactionRepository;
 
 /**
@@ -23,7 +23,7 @@ public class TransactionService {
     /**
      * Procesa la transacción: simula la ingesta en streaming y guarda en la DB.
      */
-    public Transaction ingestAndSave(Transaction transaction) {
+    public Transaccion ingestAndSave(Transaccion transaction) {
         // --- Punto 4: Simulación de "Streaming" ---
         System.out.println("-----------------------------------------------------------------------");
         System.out.println("🤖 SIMULACIÓN DE STREAMING DE DATOS RECIBIDA:");

@@ -15,7 +15,7 @@ import java.time.LocalTime;
  * Contiene las reglas de validación para los datos entrantes (Requisito 2).
  */
 @Entity
-public class Transaction {
+public class Transaccion {
 
     @Id
     @NotBlank(message = "El ID de la transacción es obligatorio.")
