@@ -1,0 +1,12 @@
+{
+  "alerts": [
+    {
+      "fecha": "2025-01-01",
+      "ubicacion": "Osorno",
+      "monto": 250000,
+      "hora": "05:52",
+      "bandera": "sospechosa",
+      "id": "T-9"
+    }
+  ]
+}
