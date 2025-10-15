@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class EvaluadorFraude {
 
-  private static final String AUDITORIA_FILE = "../dashboard-web/db2.json";
+  private static final String AUDITORIA_FILE = "../dashboard-web/db.json";
 
   // Metodo principal
   // publico, static no necesita crear un objeto para usarlo
