@@ -42,8 +42,9 @@ export default function App() {
       const arr = Array.isArray(parsed) ? parsed : parsed?.items || parsed?.alerts || [];
       setItems(arr);
       if (parsed?.source === "fallback") {
-        setStatus("Datos de ejemplo");
-        setError(parsed?.error ? `Proxy en modo fallback: ${parsed.error}` : "");
+        const reason = parsed?.error?.trim();
+        setStatus(reason ? `Datos de ejemplo (${reason})` : "Datos de ejemplo");
+        setError("");
       } else {
         setStatus("Actualizado");
         setError(parsed?.error || "");
