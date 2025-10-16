@@ -37,6 +37,8 @@ public class Transaccion {
     @NotBlank(message = "La ubicación es obligatoria.")
     private String ubicacion;
 
+    private String estado;
+
     // Getters y Setters (necesarios para JPA y JSON/de-serialization)
 
     public String getIdTransaccion() {
@@ -86,5 +88,12 @@ public class Transaccion {
     public void setUbicacion(String ubicacion) {
         this.ubicacion = ubicacion;
     }
-}
 
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+}

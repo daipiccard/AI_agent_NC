@@ -37,4 +37,3 @@ public class TransactionController {
         return String.format("Transacción %s guardada exitosamente en la base de datos.", savedTransaction.getIdTransaccion());
     }
 }
-
