@@ -28,14 +28,22 @@ Panel mínimo para visualizar transacciones y su estado (OK / SOSPECHOSA).
 ### Opción 1 — Backend real (Spring Boot)
 1. Levantar MySQL en `localhost:3306` con la base `db_transacciones` y credenciales configuradas en `ingestion-java/src/main/resources/application.properties`.
 2. Desde `ingestion-java/`: `./mvnw spring-boot:run`
-   * El backend expone el endpoint `http://127.0.0.1:8000/alerts` que utiliza el dashboard.
+   * El backend expone el endpoint `http://127.0.0.1:8000/alerts` y acepta peticiones CORS desde `http://localhost:5173` y `http://127.0.0.1:5173` por defecto.
+   * Si necesitás exponerlo a otros orígenes, ajusta `app.alerts.allowed-origins` en `application.properties` o mediante variables de entorno.
 3. En otra terminal, desde la raíz: `npm install` y luego `npm run dev`.
+   * Por defecto el front usará `http://127.0.0.1:8000/alerts`. Para apuntar a otro backend define `VITE_ALERTS_ENDPOINT` antes de ejecutar `npm run dev`.
 4. Abrir el front en la URL que imprime Vite (por ejemplo `http://localhost:5173`).
 
 ### Opción 2 — Mock con json-server
 1. En la raíz: `npx json-server --watch db.json --port 8000`
-2. En otra terminal: `npm install` y `npm run dev`
+2. En otra terminal: exporta `VITE_ALERTS_ENDPOINT=http://127.0.0.1:8000/alerts`, luego ejecuta `npm install` (una sola vez) y `npm run dev`.
 3. Abrir el front en la URL de Vite.
+
+## Deploy (Vercel u otros)
+
+- Define la variable de entorno `VITE_ALERTS_ENDPOINT` con la URL pública del backend (por ejemplo `https://mi-backend.example.com/alerts`).
+- Si el dominio del front es distinto al local, agrega ese dominio a `app.alerts.allowed-origins` (por ejemplo `https://mi-dashboard.vercel.app`).
+- Para simplificar la configuración podés publicar un endpoint proxy en la misma plataforma (por ejemplo `/api/alerts`) que reenvíe la petición al backend.
 
 ## Cómo guardar tus cambios en Git
 1. Revisa qué archivos modificaste con `git status`.
