@@ -20,16 +20,38 @@ Panel mínimo para visualizar transacciones y su estado (OK / SOSPECHOSA).
 
 ## Stack
 - Frontend: React + Vite
-- Mock backend: json-server (db.json)
-- Datos de prueba: `public/alerts.json` 
+- Backend de ingesta: Spring Boot + MySQL
+- Datos de prueba: `public/alerts.json`
 
 ## Cómo correr en local
 
-### Opción 1 — Con mock de json-server
-1. En una terminal (raíz del proyecto):  npx json-server --watch db.json --port 8000
-Endpoint: `http://127.0.0.1:8000/alerts`
+### Opción 1 — Backend real (Spring Boot)
+1. Levantar MySQL en `localhost:3306` con la base `db_transacciones` y credenciales configuradas en `ingestion-java/src/main/resources/application.properties`.
+2. Desde `ingestion-java/`: `./mvnw spring-boot:run`
+   * El backend expone el endpoint `http://127.0.0.1:8000/alerts` que utiliza el dashboard.
+3. En otra terminal, desde la raíz: `npm install` y luego `npm run dev`.
+4. Abrir el front en la URL que imprime Vite (por ejemplo `http://localhost:5173`).
 
-2. En otra terminal: npm install   npm run dev
-3. Abrir el front: la URL que imprime Vite (p. ej. `http://localhost:5173`).
-4. En `src/App.jsx` ajustar:
-const ENDPOINT = "http://127.0.0.1:8000/alerts";
+### Opción 2 — Mock con json-server
+1. En la raíz: `npx json-server --watch db.json --port 8000`
+2. En otra terminal: `npm install` y `npm run dev`
+3. Abrir el front en la URL de Vite.
+
+## Cómo guardar tus cambios en Git
+1. Revisa qué archivos modificaste con `git status`.
+2. Agrega los archivos relevantes al área de staging, por ejemplo `git add dashboard-web/src/App.jsx`.
+3. Crea un commit descriptivo: `git commit -m "Descripción breve del cambio"`.
+4. Opcional: sube el commit al repositorio remoto con `git push origin <nombre-de-tu-rama>`.
+
+Con estos pasos tus cambios quedarán guardados localmente y listos para compartir.
+
+### ¿Cómo sé si los cambios ya están aplicados?
+- Tras hacer `git commit`, puedes verificar que el commit existe ejecutando `git log --oneline -1` para ver el último mensaje guardado.
+- Si ves `nothing to commit, working tree clean` al ejecutar `git status`, significa que todos los cambios locales están registrados.
+- Si ya hiciste `git push`, la rama remota también tendrá ese commit y podrás revisarlo en GitHub.
+
+### Crear un Pull Request (PR)
+1. Asegúrate de haber hecho `git push origin <nombre-de-tu-rama>` para subir los commits.
+2. Ve a la página del repositorio en GitHub. Verás un botón que sugiere crear un PR para la rama recién subida; haz clic en **Compare & pull request**.
+3. Completa el título y la descripción del PR (por ejemplo, resumiendo los cambios y las pruebas realizadas).
+4. Haz clic en **Create pull request** para publicar la solicitud. Desde allí podrás seguir comentarios y aprobar los cambios.
