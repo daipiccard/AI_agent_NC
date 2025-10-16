@@ -3,9 +3,16 @@ import React from "react";
 import { useEffect, useState } from "react";
 import "./styles.css"; // 👈 importa las clases limpias
 
-// Cambiá esto por el endpoint real cuando lo tengas:
-const ENDPOINT = "http://127.0.0.1:8000/alerts";
-// o "http://127.0.0.1:8000/alerts"
+// Usa una variable de entorno para apuntar al backend en deploys (por ejemplo, Vercel)
+// y hace fallback al mismo origen para desarrollo local.
+const CONFIGURED_BASE = (import.meta.env.VITE_ALERTS_BASE_URL || "").trim().replace(/\/$/, "");
+const DEFAULT_LOCAL_BASE = "http://127.0.0.1:8000";
+const API_BASE =
+  CONFIGURED_BASE ||
+  (typeof window !== "undefined" && window.location.hostname === "localhost"
+    ? DEFAULT_LOCAL_BASE
+    : "");
+const ENDPOINT = `${API_BASE || ""}/alerts`;
 
 export default function App() {
   const [items, setItems] = useState([]);
