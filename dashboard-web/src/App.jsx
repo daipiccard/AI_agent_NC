@@ -4,15 +4,24 @@ import { useEffect, useState } from "react";
 import "./styles.css"; // 👈 importa las clases limpias
 
 // Usa una variable de entorno para apuntar al backend en deploys (por ejemplo, Vercel)
-// y hace fallback al mismo origen para desarrollo local.
+// y hace fallback al backend local solo durante el desarrollo en localhost. Si no se
+// cumple ninguna de las condiciones anteriores, utiliza un archivo estático incluido
+// en la aplicación para evitar errores 404 en producción.
 const CONFIGURED_BASE = (import.meta.env.VITE_ALERTS_BASE_URL || "").trim().replace(/\/$/, "");
-const DEFAULT_LOCAL_BASE = "http://127.0.0.1:8000";
-const API_BASE =
-  CONFIGURED_BASE ||
-  (typeof window !== "undefined" && window.location.hostname === "localhost"
-    ? DEFAULT_LOCAL_BASE
-    : "");
-const ENDPOINT = `${API_BASE || ""}/alerts`;
+
+function resolveEndpoint() {
+  if (CONFIGURED_BASE) {
+    return `${CONFIGURED_BASE}/alerts`;
+  }
+
+  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+    return "http://127.0.0.1:8000/alerts";
+  }
+
+  return "/alerts.json";
+}
+
+const ENDPOINT = resolveEndpoint();
 
 export default function App() {
   const [items, setItems] = useState([]);

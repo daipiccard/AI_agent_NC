@@ -1,0 +1,29 @@
+[
+  {
+    "id": "TX-0001",
+    "monto": 152300,
+    "fecha": "15/03/2024",
+    "hora": "10:35:00",
+    "ubicacion": "Buenos Aires",
+    "bandera": "SOSPECHOSA",
+    "sospechosa": true
+  },
+  {
+    "id": "TX-0002",
+    "monto": 78000,
+    "fecha": "14/03/2024",
+    "hora": "18:50:00",
+    "ubicacion": "Córdoba",
+    "bandera": "REVIEW",
+    "sospechosa": true
+  },
+  {
+    "id": "TX-0003",
+    "monto": 20500,
+    "fecha": "16/03/2024",
+    "hora": "09:10:00",
+    "ubicacion": "Mendoza",
+    "bandera": "OK",
+    "sospechosa": false
+  }
+]
