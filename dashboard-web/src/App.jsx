@@ -9,7 +9,7 @@ import "./styles.css"; // 👈 importa las clases limpias
 // en la aplicación para evitar errores 404 en producción.
 const CONFIGURED_BASE = (import.meta.env.VITE_ALERTS_BASE_URL || "").trim().replace(/\/$/, "");
 
-function resolveEndpoint() {
+function resolveBackendEndpoint() {
   if (CONFIGURED_BASE) {
     return `${CONFIGURED_BASE}/alerts`;
   }
@@ -18,30 +18,54 @@ function resolveEndpoint() {
     return "http://127.0.0.1:8000/alerts";
   }
 
-  return "/alerts.json";
+  return null;
 }
 
-const ENDPOINT = resolveEndpoint();
+const BACKEND_ENDPOINT = resolveBackendEndpoint();
+const FALLBACK_ENDPOINT = "/alerts.json";
 
 export default function App() {
   const [items, setItems] = useState([]);
   const [status, setStatus] = useState("Listo");
   const [error, setError] = useState("");
+  const [source, setSource] = useState(BACKEND_ENDPOINT || FALLBACK_ENDPOINT);
 
   async function fetchAlerts() {
     setStatus("Cargando…");
     setError("");
-    try {
-      const res = await fetch(ENDPOINT, { headers: { Accept: "application/json" } });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const arr = Array.isArray(data) ? data : data.items || data.alerts || [];
-      setItems(arr);
-      setStatus("Actualizado");
-    } catch (e) {
-      setError(`Error al consultar ${ENDPOINT}: ${e.message}`);
-      setStatus("Error");
+    const tried = [];
+    let lastError = null;
+
+    const candidates = [];
+    if (BACKEND_ENDPOINT) {
+      candidates.push(BACKEND_ENDPOINT);
     }
+    if (source && !candidates.includes(source)) {
+      candidates.push(source);
+    }
+    if (!candidates.includes(FALLBACK_ENDPOINT)) {
+      candidates.push(FALLBACK_ENDPOINT);
+    }
+
+    for (const url of candidates) {
+      tried.push(url);
+      try {
+        const res = await fetch(url, { headers: { Accept: "application/json" } });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const arr = Array.isArray(data) ? data : data.items || data.alerts || [];
+        setItems(arr);
+        setSource(url);
+        setStatus(url === FALLBACK_ENDPOINT ? "Datos de ejemplo" : "Actualizado (API)");
+        return;
+      } catch (e) {
+        lastError = e;
+      }
+    }
+
+    const target = tried.at(-1) ?? BACKEND_ENDPOINT ?? FALLBACK_ENDPOINT;
+    setError(`Error al consultar ${target}: ${lastError?.message ?? "sin detalles"}`);
+    setStatus("Error");
   }
 
   useEffect(() => {

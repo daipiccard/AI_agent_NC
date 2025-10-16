@@ -1,10 +1,9 @@
 package com.transacciones.transaction_ingestor.repository;
 
-//import com.transacciones.transactioningestor.model.Transaction;
+import com.transacciones.transaction_ingestor.model.Transaccion;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-
-import com.transacciones.transaction_ingestor.model.Transaccion;
 
 /**
  * Interfaz para la persistencia de datos (Requisito 3).
@@ -13,4 +12,6 @@ import com.transacciones.transaction_ingestor.model.Transaccion;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaccion, String> {
     // String es el tipo de la clave primaria (idTransaccion)
+
+    List<Transaccion> findTop100ByOrderByFechaDescHoraDesc();
 }
