@@ -85,7 +85,7 @@ public class EvaluadorFraude {
       output.put("alerts", alerts);
 
       // Escribe la lista de alertas en el archivo JSON
-      mapper.writeValue(new FileWriter(file), output);
+      mapper.writeValue(new File(AUDITORIA_FILE), output);
 
     } catch (IOException e) {
       e.printStackTrace();
