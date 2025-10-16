@@ -65,3 +65,9 @@ Con estos pasos tus cambios quedarán guardados localmente y listos para compart
 2. Ve a la página del repositorio en GitHub. Verás un botón que sugiere crear un PR para la rama recién subida; haz clic en **Compare & pull request**.
 3. Completa el título y la descripción del PR (por ejemplo, resumiendo los cambios y las pruebas realizadas).
 4. Haz clic en **Create pull request** para publicar la solicitud. Desde allí podrás seguir comentarios y aprobar los cambios.
+
+### ¿Cómo cierro un Pull Request sin hacer merge?
+1. Ingresa al PR en GitHub desde la pestaña **Pull requests**.
+2. Desplázate hasta el final de la conversación y haz clic en el botón **Close pull request**.
+3. Si quieres eliminar la rama remota asociada, GitHub te ofrecerá la opción **Delete branch** después de cerrarlo.
+4. Los commits permanecerán en la rama, pero el PR se marcará como cerrado sin fusionarse; siempre puedes reabrirlo si cambias de opinión.
