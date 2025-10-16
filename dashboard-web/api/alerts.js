@@ -25,6 +25,9 @@ const FALLBACK_ALERTS = [
   },
 ];
 
+const fallbackMode = (process.env.ALERTS_PROXY_FALLBACK || "").trim().toLowerCase();
+const fallbackEnabled = ["1", "true", "on", "sample", "enabled"].includes(fallbackMode);
+
 function inferUpstreamUrl(req) {
   const configured =
     process.env.ALERTS_BACKEND_URL ||
@@ -62,6 +65,17 @@ function inferUpstreamUrl(req) {
   }
 }
 
+function respondWithFallback(res, reason) {
+  if (!fallbackEnabled) {
+    res.status(502).json({ error: reason || "Backend no configurado" });
+    return;
+  }
+
+  res
+    .status(200)
+    .json({ alerts: FALLBACK_ALERTS, source: "fallback", error: reason || "Backend no configurado" });
+}
+
 export default async function handler(req, res) {
   if (req.method !== "GET") {
     res.setHeader("Allow", "GET");
@@ -72,21 +86,17 @@ export default async function handler(req, res) {
   const upstream = inferUpstreamUrl(req);
 
   if (!upstream) {
-    res
-      .status(200)
-      .json({ alerts: FALLBACK_ALERTS, source: "fallback", error: "Backend no configurado" });
+    respondWithFallback(res, "Backend no configurado");
     return;
   }
 
   if (upstream.error) {
-    res
-      .status(200)
-      .json({ alerts: FALLBACK_ALERTS, source: "fallback", error: upstream.error });
+    respondWithFallback(res, upstream.error);
     return;
   }
 
   if (upstream.loop) {
-    res.status(200).json({ alerts: FALLBACK_ALERTS, source: "fallback", error: "Proxy configurado hacia sí mismo" });
+    respondWithFallback(res, "Proxy configurado hacia sí mismo");
     return;
   }
 
@@ -107,8 +117,6 @@ export default async function handler(req, res) {
       res.send(bodyText);
     }
   } catch (err) {
-    res
-      .status(200)
-      .json({ alerts: FALLBACK_ALERTS, source: "fallback", error: `Fallo al consultar backend: ${String(err)}` });
+    respondWithFallback(res, `Fallo al consultar backend: ${String(err)}`);
   }
 }

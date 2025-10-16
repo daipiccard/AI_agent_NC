@@ -45,7 +45,7 @@ Panel mínimo para visualizar transacciones y su estado (OK / SOSPECHOSA).
 - Opcionalmente, también puedes definir `VITE_ALERTS_ENDPOINT` para apuntar el front directamente al backend durante el build. Si no la indicas, el front consultará `https://<tu-dominio>/api/alerts`, que será atendido por la función anterior.
 - Si el dominio del front es distinto al local, agrega ese dominio a `app.alerts.allowed-origins` (por ejemplo `https://mi-dashboard.vercel.app`).
 - Si prefieres prescindir del proxy en Vercel, elimina `api/alerts.js` y define `VITE_ALERTS_ENDPOINT` con la URL final antes de desplegar.
-- Si ninguna variable está configurada o la URL provoca un bucle hacia el propio dominio de Vercel, la función devolverá un conjunto de alertas de ejemplo para que el dashboard no quede vacío mientras se ajusta la configuración.
+- El proxy ya no sirve datos de ejemplo por defecto; si falta la variable de entorno o el backend es inaccesible, responderá con un error 502 para dejar claro que la configuración está incompleta. Solo se puede habilitar la muestra estática exportando `ALERTS_PROXY_FALLBACK=sample` (o valores equivalentes como `true`/`on`).
 
 ## Cómo guardar tus cambios en Git
 1. Revisa qué archivos modificaste con `git status`.
