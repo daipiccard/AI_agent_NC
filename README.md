@@ -41,10 +41,11 @@ Panel mínimo para visualizar transacciones y su estado (OK / SOSPECHOSA).
 
 ## Deploy (Vercel u otros)
 
-- Define la variable de entorno `ALERTS_BACKEND_URL` con la URL pública del backend Spring Boot (por ejemplo `https://mi-backend.example.com/alerts`). La función serverless en `api/alerts.js` la usará para reenviar las consultas del dashboard.
+- Define la variable de entorno `ALERTS_BACKEND_URL` (o `NEXT_PUBLIC_ALERTS_BACKEND_URL`) con la URL pública del backend Spring Boot (por ejemplo `https://mi-backend.example.com/alerts`). La función serverless en `api/alerts.js` la usará para reenviar las consultas del dashboard.
 - Opcionalmente, también puedes definir `VITE_ALERTS_ENDPOINT` para apuntar el front directamente al backend durante el build. Si no la indicas, el front consultará `https://<tu-dominio>/api/alerts`, que será atendido por la función anterior.
 - Si el dominio del front es distinto al local, agrega ese dominio a `app.alerts.allowed-origins` (por ejemplo `https://mi-dashboard.vercel.app`).
 - Si prefieres prescindir del proxy en Vercel, elimina `api/alerts.js` y define `VITE_ALERTS_ENDPOINT` con la URL final antes de desplegar.
+- Si ninguna variable está configurada o la URL provoca un bucle hacia el propio dominio de Vercel, la función devolverá un conjunto de alertas de ejemplo para que el dashboard no quede vacío mientras se ajusta la configuración.
 
 ## Cómo guardar tus cambios en Git
 1. Revisa qué archivos modificaste con `git status`.

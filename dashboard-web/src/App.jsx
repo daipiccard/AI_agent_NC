@@ -24,11 +24,30 @@ export default function App() {
     setError("");
     try {
       const res = await fetch(ENDPOINT, { headers: { Accept: "application/json" } });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const arr = Array.isArray(data) ? data : data.items || data.alerts || [];
+      const text = await res.text();
+      let parsed;
+      if (text) {
+        try {
+          parsed = JSON.parse(text);
+        } catch (err) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+      }
+
+      if (!res.ok) {
+        const detail = parsed?.error || parsed?.detail;
+        throw new Error(detail ? `${detail} (HTTP ${res.status})` : `HTTP ${res.status}`);
+      }
+
+      const arr = Array.isArray(parsed) ? parsed : parsed?.items || parsed?.alerts || [];
       setItems(arr);
-      setStatus("Actualizado");
+      if (parsed?.source === "fallback") {
+        setStatus("Datos de ejemplo");
+        setError(parsed?.error ? `Proxy en modo fallback: ${parsed.error}` : "");
+      } else {
+        setStatus("Actualizado");
+        setError(parsed?.error || "");
+      }
     } catch (e) {
       setError(`Error al consultar ${ENDPOINT}: ${e.message}`);
       setStatus("Error");
