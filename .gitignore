@@ -23,3 +23,5 @@ build/
 .env
 **/.env
 infra/.env
+
+modelo/data/*.csv
