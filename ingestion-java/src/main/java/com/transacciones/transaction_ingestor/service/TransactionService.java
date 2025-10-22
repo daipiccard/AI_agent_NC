@@ -1,48 +1,44 @@
 package com.transacciones.transaction_ingestor.service;
 
-import com.transacciones.transaction_ingestor.model.Transaccion;
-import com.transacciones.transaction_ingestor.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-/**
- * Contiene la lógica de negocio. Implementa la simulación de streaming (Requisito 4) y llama al
- * repositorio para guardar.
- */
+import com.transacciones.transaction_ingestor.kafka.TransactionProducer;
+import com.transacciones.transaction_ingestor.model.Transaccion;
+import com.transacciones.transaction_ingestor.repository.TransactionRepository;
+
 @Service
 public class TransactionService {
 
-  private final TransactionRepository transactionRepository;
-  private final EvaluadorFraude evaluadorFraude;
+    private final TransactionRepository transactionRepository;
+    private final TransactionProducer transactionProducer;
 
-  @Autowired
-  public TransactionService(
-      TransactionRepository transactionRepository, EvaluadorFraude evaluadorFraude) {
-    this.transactionRepository = transactionRepository;
-    this.evaluadorFraude = evaluadorFraude;
-  }
+    @Autowired
+    public TransactionService(
+        TransactionRepository transactionRepository,
+        TransactionProducer transactionProducer
+    ) {
+        this.transactionRepository = transactionRepository;
+        this.transactionProducer = transactionProducer;
+    }
 
-  /** Procesa la transacción: simula la ingesta en streaming y guarda en la DB. */
-  public Transaccion ingestAndSave(Transaccion transaction) {
-    // --- Punto 4: Simulación de "Streaming" ---
-    System.out.println(
-        "-----------------------------------------------------------------------");
-    System.out.println("🤖 SIMULACIÓN DE STREAMING DE DATOS RECIBIDA:");
-    System.out.printf(
-        "  ID: %s | User: %s | Monto: %s | Ubicación: %s%n",
-        transaction.getIdTransaccion(),
-        transaction.getUserId(),
-        transaction.getMonto(),
-        transaction.getUbicacion());
-    System.out.println("  Datos validados y listos para persistencia.");
-    System.out.println(
-        "-----------------------------------------------------------------------");
+    /**
+     * Procesa la transacción: la envía a Kafka (streaming real)
+     */
+    public Transaccion ingestAndSave(Transaccion transaction) {
+        System.out.println("-----------------------------------------------------------------------");
+        System.out.println("🎯 NUEVA TRANSACCIÓN RECIBIDA VIA API:");
+        System.out.printf("  ID: %s | User: %s | Monto: %s | Ubicación: %s%n",
+                          transaction.getIdTransaccion(),
+                          transaction.getUserId(),
+                          transaction.getMonto(),
+                          transaction.getUbicacion());
+        System.out.println("  ➡️  Enviando a Kafka para procesamiento asíncrono...");
+        System.out.println("-----------------------------------------------------------------------");
 
-    // --- Integración del Evaluador de Fraude ---
-    String estado = evaluadorFraude.evaluar(transaction);
-    transaction.setEstado(estado);
-
-    // --- Punto 3: Guardar la transacción en MySQL (JPA) ---
-    return transactionRepository.save(transaction);
-  }
+        // Enviar a Kafka en lugar de guardar directamente
+        transactionProducer.sendTransaction(transaction);
+        
+        return transaction;
+    }
 }

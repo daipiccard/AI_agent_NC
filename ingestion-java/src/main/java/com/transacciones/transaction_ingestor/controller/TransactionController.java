@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.transacciones.transaction_ingestor.model.Transaccion;
-import com.transacciones.transaction_ingestor.service.TransactionService;
+import com.transacciones.transaction_ingestor.service.TransactionServiceOff;
 
 /**
  * Controlador REST que expone el endpoint para la ingesta de transacciones (Requisito 1).
@@ -19,10 +19,10 @@ import com.transacciones.transaction_ingestor.service.TransactionService;
 @RequestMapping("/transactions")
 public class TransactionController {
 
-    private final TransactionService transactionService;
+    private final TransactionServiceOff transactionService;
 
     @Autowired
-    public TransactionController(TransactionService transactionService) {
+    public TransactionController(TransactionServiceOff transactionService) {
         this.transactionService = transactionService;
     }
 
