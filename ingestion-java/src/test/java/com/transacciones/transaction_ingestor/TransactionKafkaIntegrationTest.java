@@ -85,3 +85,6 @@ class TransactionKafkaIntegrationTest {
         container.stop();
     }
 }
+
+//lanzar test
+//╰─ mvn test -Dtest=TransactionKafkaIntegrationTest                                                                        ─╯
