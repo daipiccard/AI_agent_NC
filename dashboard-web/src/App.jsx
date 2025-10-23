@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./index.css";          // tu CSS principal dentro de src
 import "./myStyles/globals.css"; // mi CSS del Figma, ruta correcta
+const ENDPOINT = "/alerts.json"; // o "http://127.0.0.1:8000/alerts
 
 // Componentes Figma
 import { Button } from "./components/ui/button";
