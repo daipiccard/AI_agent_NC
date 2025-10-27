@@ -5,8 +5,7 @@ import "./styles.css"; // 👈 importa las clases limpias
 
 // Usa una variable de entorno para apuntar al backend en deploys (por ejemplo, Vercel)
 // y hace fallback al backend local solo durante el desarrollo en localhost. Si no se
-// cumple ninguna de las condiciones anteriores, utiliza un archivo estático incluido
-// en la aplicación para evitar errores 404 en producción.
+// cumple ninguna de las condiciones anteriores se informa el error (sin dataset estático).
 const CONFIGURED_BASE = (import.meta.env.VITE_ALERTS_BASE_URL || "").trim().replace(/\/$/, "");
 
 const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1"]);
@@ -24,50 +23,35 @@ function resolveBackendEndpoint() {
 }
 
 const BACKEND_ENDPOINT = resolveBackendEndpoint();
-const FALLBACK_ENDPOINT = "/alerts.json";
 
 export default function App() {
   const [items, setItems] = useState([]);
   const [status, setStatus] = useState("Listo");
   const [error, setError] = useState("");
-  const [source, setSource] = useState(BACKEND_ENDPOINT || FALLBACK_ENDPOINT);
 
   async function fetchAlerts() {
     setStatus("Cargando…");
     setError("");
-    const tried = [];
-    let lastError = null;
-
-    const candidates = [];
-    if (BACKEND_ENDPOINT) {
-      candidates.push(BACKEND_ENDPOINT);
-    }
-    if (source && !candidates.includes(source)) {
-      candidates.push(source);
-    }
-    if (!candidates.includes(FALLBACK_ENDPOINT)) {
-      candidates.push(FALLBACK_ENDPOINT);
+    if (!BACKEND_ENDPOINT) {
+      setItems([]);
+      setError(
+        "Backend no configurado. Definí VITE_ALERTS_BASE_URL o abrí el dashboard desde localhost para usar el servicio local."
+      );
+      setStatus("Error");
+      return;
     }
 
-    for (const url of candidates) {
-      tried.push(url);
-      try {
-        const res = await fetch(url, { headers: { Accept: "application/json" } });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        const arr = Array.isArray(data) ? data : data.items || data.alerts || [];
-        setItems(arr);
-        setSource(url);
-        setStatus(url === FALLBACK_ENDPOINT ? "Datos de ejemplo" : "Actualizado (API)");
-        return;
-      } catch (e) {
-        lastError = e;
-      }
+    try {
+      const res = await fetch(BACKEND_ENDPOINT, { headers: { Accept: "application/json" } });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const arr = Array.isArray(data) ? data : data.items || data.alerts || [];
+      setItems(arr);
+      setStatus("Actualizado (API)");
+    } catch (e) {
+      setError(`Error al consultar ${BACKEND_ENDPOINT}: ${e?.message ?? "sin detalles"}`);
+      setStatus("Error");
     }
-
-    const target = tried.at(-1) ?? BACKEND_ENDPOINT ?? FALLBACK_ENDPOINT;
-    setError(`Error al consultar ${target}: ${lastError?.message ?? "sin detalles"}`);
-    setStatus("Error");
   }
 
   useEffect(() => {
