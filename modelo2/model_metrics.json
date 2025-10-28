@@ -1,0 +1,79 @@
+{
+    "auc": 0.9765906362545017,
+    "precision": 0.9772727272727273,
+    "recall": 0.8775510204081632,
+    "f1": 0.9247311827956989,
+    "optimal_threshold": 0.6735872303961772,
+    "confusion_matrix": [
+        [
+            100,
+            2
+        ],
+        [
+            12,
+            86
+        ]
+    ],
+    "classification_report": {
+        "False": {
+            "precision": 0.8928571428571429,
+            "recall": 0.9803921568627451,
+            "f1-score": 0.9345794392523364,
+            "support": 102.0
+        },
+        "True": {
+            "precision": 0.9772727272727273,
+            "recall": 0.8775510204081632,
+            "f1-score": 0.9247311827956989,
+            "support": 98.0
+        },
+        "accuracy": 0.93,
+        "macro avg": {
+            "precision": 0.9350649350649352,
+            "recall": 0.9289715886354541,
+            "f1-score": 0.9296553110240177,
+            "support": 200.0
+        },
+        "weighted avg": {
+            "precision": 0.9342207792207793,
+            "recall": 0.93,
+            "f1-score": 0.929753793588584,
+            "support": 200.0
+        }
+    },
+    "feature_importance": {
+        "Transaction Amount": 27,
+        "Latency (ms)": 13,
+        "Slice Bandwidth (Mbps)": 26,
+        "Latitude": 9,
+        "Longitude": 17,
+        "hour": 0,
+        "dayofweek": 0,
+        "month": 0,
+        "is_weekend": 0,
+        "Sender Account ID_encoded": 29,
+        "Receiver Account ID_encoded": 25,
+        "Transaction Type_Transfer": 3,
+        "Transaction Type_Withdrawal": 0,
+        "Transaction Status_Success": 0,
+        "Device Used_Mobile": 9,
+        "Network Slice ID_Slice2": 0,
+        "Network Slice ID_Slice3": 4,
+        "time_since_last_txn_sender": 0,
+        "txn_count_last_5min_sender": 0,
+        "sender_txn_count": 0,
+        "sender_avg_amount": 3,
+        "sender_std_amount": 0,
+        "receiver_txn_count": 0,
+        "receiver_avg_amount": 8,
+        "unique_receivers": 0,
+        "distance_from_last_location": 0,
+        "avg_txn_distance": 0,
+        "bandwidth_ratio": 24,
+        "amount_zscore_sender": 0,
+        "is_high_value": 0,
+        "pin_entropy": 0,
+        "pin_reuse_count": 0,
+        "anomaly_score": 0
+    }
+}
