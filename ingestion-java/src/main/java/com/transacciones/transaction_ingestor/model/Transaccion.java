@@ -37,6 +37,9 @@ public class Transaccion {
     @NotBlank(message = "La ubicación es obligatoria.")
     private String ubicacion;
 
+    // Estado/flag que puede contener valores como "OK", "SOSP" u otros indicadores
+    private String estado;
+
     // Getters y Setters (necesarios para JPA y JSON/de-serialization)
 
     public String getIdTransaccion() {
@@ -85,6 +88,14 @@ public class Transaccion {
 
     public void setUbicacion(String ubicacion) {
         this.ubicacion = ubicacion;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }
 
