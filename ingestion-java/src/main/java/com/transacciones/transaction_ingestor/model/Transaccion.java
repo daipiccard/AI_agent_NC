@@ -1,101 +1,82 @@
 package com.transacciones.transaction_ingestor.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.DecimalMin;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 
-/**
- * Entidad JPA que representa la tabla 'transaction' en la base de datos.
- * Contiene las reglas de validación para los datos entrantes (Requisito 2).
- */
 @Entity
+@Table(name = "transacciones")
 public class Transaccion {
 
     @Id
-    @NotBlank(message = "El ID de la transacción es obligatorio.")
+    @Column(name = "id_transaccion", length = 64)
+    @NotBlank
     private String idTransaccion;
 
-    @NotBlank(message = "El ID de usuario es obligatorio.")
-    private String userId;
+    // ===== Entrada del JSON (no se persiste). =====
+    @Transient
+    private String idUsuario;
 
-    @NotNull(message = "El monto es obligatorio.")
-    @DecimalMin(value = "0.01", inclusive = true, message = "El monto debe ser positivo.")
+    // ===== Relación persistida =====
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
+
+    @NotNull
     private BigDecimal monto;
 
-    @NotNull(message = "La fecha es obligatoria.")
-    private LocalDate fecha;
+    @Column(name = "timestamp_transaccion", nullable = false)
+    @NotNull
+    private LocalDateTime timestampTransaccion;
 
-    @NotNull(message = "La hora es obligatoria.")
-    private LocalTime hora;
+    @Column(precision = 10, scale = 6, nullable = false)
+    private BigDecimal latitud;
 
-    @NotBlank(message = "La ubicación es obligatoria.")
-    private String ubicacion;
+    @Column(precision = 10, scale = 6, nullable = false)
+    private BigDecimal longitud;
 
-    // Estado/flag que puede contener valores como "OK", "SOSP" u otros indicadores
-    private String estado;
+    @Column(length = 4)
+    private String pais;
 
-    // Getters y Setters (necesarios para JPA y JSON/de-serialization)
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
-    public String getIdTransaccion() {
-        return idTransaccion;
-    }
+    @Column(name = "raw_json", columnDefinition = "json", nullable = false)
+    private String rawJson;
 
-    public void setIdTransaccion(String idTransaccion) {
-        this.idTransaccion = idTransaccion;
-    }
+    // ===== Getters/Setters =====
+    public String getIdTransaccion() { return idTransaccion; }
+    public void setIdTransaccion(String idTransaccion) { this.idTransaccion = idTransaccion; }
 
-    public String getUserId() {
-        return userId;
-    }
+    public String getIdUsuario() { return idUsuario; }
+    public void setIdUsuario(String idUsuario) { this.idUsuario = idUsuario; }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
 
-    public BigDecimal getMonto() {
-        return monto;
-    }
+    public BigDecimal getMonto() { return monto; }
+    public void setMonto(BigDecimal monto) { this.monto = monto; }
 
-    public void setMonto(BigDecimal monto) {
-        this.monto = monto;
-    }
+    public LocalDateTime getTimestampTransaccion() { return timestampTransaccion; }
+    public void setTimestampTransaccion(LocalDateTime t) { this.timestampTransaccion = t; }
 
-    public LocalDate getFecha() {
-        return fecha;
-    }
+    public BigDecimal getLatitud() { return latitud; }
+    public void setLatitud(BigDecimal latitud) { this.latitud = latitud; }
 
-    public void setFecha(LocalDate fecha) {
-        this.fecha = fecha;
-    }
+    public BigDecimal getLongitud() { return longitud; }
+    public void setLongitud(BigDecimal longitud) { this.longitud = longitud; }
 
-    public LocalTime getHora() {
-        return hora;
-    }
+    public String getPais() { return pais; }
+    public void setPais(String pais) { this.pais = pais; }
 
-    public void setHora(LocalTime hora) {
-        this.hora = hora;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
-    public String getUbicacion() {
-        return ubicacion;
-    }
-
-    public void setUbicacion(String ubicacion) {
-        this.ubicacion = ubicacion;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
+    public String getRawJson() { return rawJson; }
+    public void setRawJson(String rawJson) { this.rawJson = rawJson; }
 }
-

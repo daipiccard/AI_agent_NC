@@ -15,7 +15,7 @@ function resolveBackendEndpoint() {
   }
 
   if (typeof window !== "undefined" && window.location.hostname === "localhost") {
-    return "http://127.0.0.1:8000/alerts";
+    return "http://127.0.0.1:8001/alerts";
   }
 
   return null;

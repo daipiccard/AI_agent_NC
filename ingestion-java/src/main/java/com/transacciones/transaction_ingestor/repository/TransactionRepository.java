@@ -1,17 +1,28 @@
 package com.transacciones.transaction_ingestor.repository;
 
 import com.transacciones.transaction_ingestor.model.Transaccion;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-/**
- * Interfaz para la persistencia de datos (Requisito 3).
- * Extiende JpaRepository para obtener métodos CRUD automáticamente.
- */
-@Repository
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
 public interface TransactionRepository extends JpaRepository<Transaccion, String> {
-    // String es el tipo de la clave primaria (idTransaccion)
 
-    List<Transaccion> findTop100ByOrderByFechaDescHoraDesc();
+    // Últimas 100 transacciones por fecha/hora descendente
+    List<Transaccion> findTop100ByOrderByTimestampTransaccionDesc();
+
+    // Transacciones recientes de un usuario
+    List<Transaccion> findByUsuario_IdUsuarioOrderByTimestampTransaccionDesc(String idUsuario);
+
+    // Transacciones en un rango de tiempo
+    List<Transaccion> findByTimestampTransaccionBetweenOrderByTimestampTransaccionDesc(
+            LocalDateTime desde, LocalDateTime hasta
+    );
+
+    // Ejemplo con @Query: mínimo monto + orden por fecha
+    @Query("SELECT t FROM Transaccion t WHERE t.monto >= :min ORDER BY t.timestampTransaccion DESC")
+    List<Transaccion> findRecentWithMinAmount(@Param("min") BigDecimal min);
 }
