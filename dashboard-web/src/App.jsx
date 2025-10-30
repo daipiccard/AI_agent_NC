@@ -17,6 +17,10 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 
 // Iconos
 import { Shield, Menu, Bell, Download, LayoutDashboard, AlertTriangle, ListFilter, Settings, Home } from "lucide-react";
+const CONFIGURED_BASE = (import.meta.env.VITE_ALERTS_BASE_URL || "")
+  .trim()
+  .replace(/\/$/, "");
+
 function resolveBackendEndpoint() {
   if (CONFIGURED_BASE) {
     return `${CONFIGURED_BASE}/alerts`;
