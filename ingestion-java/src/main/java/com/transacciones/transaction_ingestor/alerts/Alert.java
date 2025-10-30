@@ -2,16 +2,17 @@ package com.transacciones.transaction_ingestor.alerts;
 
 import java.math.BigDecimal;
 
-/**
- * Simple DTO used to expose alert data to the dashboard.
- */
+/** DTO para exponer filas de la tabla alertas */
 public record Alert(
-        String id,
+        Long idAlerta,          // <— Long en lugar de String
+        String idTransaccion,   // <— lo derivamos del entity relacionado
+        String idUsuario,
         BigDecimal monto,
         String fecha,
         String hora,
-        String ubicacion,
         String bandera,
-        boolean sospechosa
-) {
-}
+        String origenFiltro,
+        BigDecimal puntuacionFinal,
+        String reasonsJson,
+        String createdAtIso
+) {}

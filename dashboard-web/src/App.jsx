@@ -42,44 +42,76 @@ export default function App() {
   const [status, setStatus] = useState("Listo");
   const [error, setError] = useState("");
 
-  async function fetchAlerts() {
-    setStatus("Cargando…");
-    setError("");
-    try {
-      const res = await fetch("/alerts.json");
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      const arr = Array.isArray(data) ? data : data.items || data.alerts || [];
+ // snapshot para evitar rerenders si no cambió el contenido
+const [snapshot, setSnapshot] = useState("");
+
+function snapFrom(arr) {
+  // Crea una “huella” rápida del array (puede ser lo que prefieras)
+  // ID alerta + ID tx + score suelen bastar para detectar cambios
+  return arr.map(x => `${x.idAlerta ?? x.id ?? ""}:${x.idTransaccion ?? ""}:${x.puntuacionFinal ?? ""}`).join("|");
+}
+
+async function fetchAlerts() {
+  setStatus("Cargando…");
+  setError("");
+  try {
+    const url = BACKEND_ENDPOINT || FALLBACK_ENDPOINT;
+    const res = await fetch(url, {
+      cache: "no-store",
+      headers: {
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache",
+      },
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const data = await res.json();
+    const arr = Array.isArray(data) ? data : (data.items || data.alerts || []);
+
+    const newSnap = snapFrom(arr);
+    if (newSnap !== snapshot) {
       setItems(arr);
+      setSnapshot(newSnap);
       setStatus("Actualizado");
-    } catch (e) {
-      setError(`Error al consultar: ${e.message}`);
-      setStatus("Error");
+    } else {
+      setStatus("Sin cambios");
     }
+  } catch (e) {
+    setError(`Error al consultar: ${e.message}`);
+    setStatus("Error");
   }
+}
 
   useEffect(() => {
-    fetchAlerts();
-    const t = setInterval(fetchAlerts, 5000);
-    return () => clearInterval(t);
-  }, []);
+  fetchAlerts(); // primera carga
+  const timer = setInterval(() => {
+    if (!document.hidden) {
+      fetchAlerts();
+    }
+  }, 3000); // cada 2s (ajustable)
+
+  return () => clearInterval(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
 
   const fmtMoney = (v) =>
     new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 })
       .format(Number(v) || 0);
 
-  function estadoClass(bandera, sospechosa) {
-    const s = (bandera ?? (sospechosa ? "sospechoso" : "ok")).toString().toLowerCase();
-    if (s.includes("sosp")) return "pill estado-sospechosa";
-    if (s.includes("review")) return "pill estado-review";
-    return "pill estado-ok";
-  }
-
-  function EstadoPill({ bandera, sospechosa }) {
-    const cls = estadoClass(bandera, sospechosa);
-    const label = cls.includes("sospechosa") ? "SOSPECHOSA" : cls.includes("review") ? "REVIEW" : "OK";
-    return <span className={cls} data-test="estado-pill">{label}</span>;
-  }
+  function estadoClass(bandera) {
+  const s = (bandera ?? "ok").toString().toLowerCase();
+  if (s.includes("bloq")) return "pill estado-sospechosa"; // o un estilo distinto para bloqueado
+  if (s.includes("sosp")) return "pill estado-sospechosa";
+  if (s.includes("review")) return "pill estado-review";
+  return "pill estado-ok";
+}
+function EstadoPill({ bandera }) {
+  const cls = estadoClass(bandera);
+  const label =
+    bandera?.toUpperCase?.() ??
+    (cls.includes("sospechosa") ? "SOSPECHOSA" : cls.includes("review") ? "REVIEW" : "OK");
+  return <span className={cls}>{label}</span>;
+}
 
   // ✅ Lógica del menú Figma
   const [menuOpen, setMenuOpen] = useState(false);
@@ -192,41 +224,55 @@ export default function App() {
         </div>
 
         {/* Alerts Section (tabla del equipo) */}
-        <div id="alerts" className="grid gap-6 md:grid-cols-7 scroll-mt-20">
-          <AlertsPanel />
-          <div id="transactions" className="col-span-3 scroll-mt-20">
-            <table className="tabla">
-              <thead>
-                <tr>
-                  <th>ID</th><th>Monto</th><th>Fecha</th><th>Hora</th><th>Ubicación</th><th>Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {items.length === 0 ? (
-                  <tr><td colSpan="6" className="muted">Sin datos…</td></tr>
-                ) : (
-                  items.map((it, i) => {
-                    const id = it.id || it.tx_id || "-";
-                    const monto = fmtMoney(it.monto);
-                    const fecha = it.fecha || "-";
-                    const hora = it.hora || "-";
-                    const ubic = it.ubicacion || it.pais || "-";
-                    return (
-                      <tr key={i}>
-                        <td>{id}</td>
-                        <td>{monto}</td>
-                        <td>{fecha}</td>
-                        <td>{hora}</td>
-                        <td>{ubic}</td>
-                        <td><EstadoPill bandera={it.bandera} sospechosa={it.sospechosa} /></td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <div id="transactions" className="col-span-3 scroll-mt-20">
+  <table className="tabla">
+    <thead>
+      <tr>
+        <th>ID Alerta</th>
+        <th>ID Tx</th>
+        <th>Usuario</th>
+        <th>Monto</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Bandera</th>
+        <th>Origen</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      {items.length === 0 ? (
+        <tr><td colSpan="9" className="muted">Sin datos…</td></tr>
+      ) : (
+        items.map((it, i) => {
+          const idAlerta = it.idAlerta ?? it.id ?? "-";
+          const idTx     = it.idTransaccion ?? it.txId ?? "-";
+          const usuario  = it.idUsuario ?? "-";
+          const monto    = fmtMoney(it.monto);
+          const fecha    = it.fechaOnly ?? it.fecha ?? "-";
+          const hora     = it.horaOnly ?? it.hora ?? "-";
+          const bandera  = it.bandera ?? "ok";
+          const origen   = it.origenFiltro ?? it.origen ?? "-";
+          const scoreRaw = it.puntuacionFinal ?? it.score ?? 0;
+          const score    = Number(scoreRaw).toFixed(2);
+
+          return (
+            <tr key={i}>
+              <td>{idAlerta}</td>
+              <td>{idTx}</td>
+              <td>{usuario}</td>
+              <td>{monto}</td>
+              <td>{fecha}</td>
+              <td>{hora}</td>
+              <td><EstadoPill bandera={bandera} sospechosa={bandera?.toLowerCase().includes("sosp")} /></td>
+              <td>{origen}</td>
+              <td>{score}</td>
+            </tr>
+          );
+        })
+      )}
+    </tbody>
+  </table>
+</div>
 
         {/* Config Panel */}
         <div id="config" className="grid gap-6 md:grid-cols-7 scroll-mt-20">

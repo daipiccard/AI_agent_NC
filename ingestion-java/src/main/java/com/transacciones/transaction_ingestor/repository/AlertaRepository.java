@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface AlertaRepository extends JpaRepository<Alerta, Long> {
+public interface AlertaRepository extends JpaRepository<Alerta, String> {
 
     // Usa el campo que tengas disponible para ordenar (elige UNA de estas dos firmas)
     List<Alerta> findTop100ByOrderByCreatedAtDesc();   // si tu entidad tiene createdAt

@@ -78,7 +78,7 @@ public class Alerta {
     public Long getIdAlerta() { return idAlerta; }
     public void setIdAlerta(Long idAlerta) { this.idAlerta = idAlerta; }
 
-    public Transaccion getTransaccion() { return transaccion; }
+    public Transaccion getIdTransaccion() { return transaccion; }
     public void setTransaccion(Transaccion transaccion) { this.transaccion = transaccion; }
 
     public String getIdUsuario() { return idUsuario; }
