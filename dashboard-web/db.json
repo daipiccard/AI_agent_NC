@@ -1,6 +1,44 @@
 {
-    "alerts": [
-      {"id":"T-1001","monto":250000,"fecha":"2025-10-01","hora":"14:10","ubicacion":"AR","bandera":"sospechoso"},
-      {"id":"T-1002","monto":5000,  "fecha":"2025-10-01","hora":"14:11","ubicacion":"AR","bandera":"ok"}
-    ]
-  }
+  "alerts": [
+    {
+      "id": "T-1001",
+      "monto": 250000,
+      "fecha": "2025-10-01",
+      "hora": "14:10",
+      "ubicacion": "AR",
+      "bandera": "sospechoso"
+    },
+    {
+      "id": "T-1002",
+      "monto": 5000,
+      "fecha": "2025-10-01",
+      "hora": "14:11",
+      "ubicacion": "AR",
+      "bandera": "ok"
+    },
+    {
+      "id": "T-1002",
+      "monto": 5000,
+      "fecha": "2025-10-01",
+      "hora": "1:29",
+      "ubicacion": "CL",
+      "bandera": "ok"
+    },
+    {
+      "id": "T-1002",
+      "monto": 5000,
+      "fecha": "2025-10-01",
+      "hora": "1:41",
+      "ubicacion": "BL",
+      "bandera": "ok"
+    },
+    {
+      "id": "T-1002",
+      "monto": 5000,
+      "fecha": "2025-10-01",
+      "hora": "1:45",
+      "ubicacion": "BL",
+      "bandera": "ok"
+    }
+  ]
+}

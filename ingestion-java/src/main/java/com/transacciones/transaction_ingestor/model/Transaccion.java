@@ -1,28 +1,28 @@
 package com.transacciones.transaction_ingestor.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 /**
- * Entidad JPA que representa la tabla 'transaction' en la base de datos.
- * Contiene las reglas de validación para los datos entrantes (Requisito 2).
+ * Entidad JPA que representa la tabla 'transacciones' en la base de datos.
+ * Está vinculada con las tablas 'usuarios' y 'alertas'.
  */
 @Entity
+@Table(name = "transacciones")
 public class Transaccion {
 
     @Id
-    @NotBlank(message = "El ID de la transacción es obligatorio.")
-    private String idTransaccion;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idTransaccion; // Cambiado a autoincremental para relación con otras tablas
 
-    @NotBlank(message = "El ID de usuario es obligatorio.")
-    private String userId;
+    // Relación: muchas transacciones pertenecen a un usuario
+    @ManyToOne
+    @JoinColumn(name = "id_usuario", nullable = false)
+    private Usuario usuario;
 
     @NotNull(message = "El monto es obligatorio.")
     @DecimalMin(value = "0.01", inclusive = true, message = "El monto debe ser positivo.")
@@ -34,28 +34,32 @@ public class Transaccion {
     @NotNull(message = "La hora es obligatoria.")
     private LocalTime hora;
 
-    @NotBlank(message = "La ubicación es obligatoria.")
+    @NotNull(message = "La ubicación es obligatoria.")
     private String ubicacion;
 
-    // Estado/flag que puede contener valores como "OK", "SOSP" u otros indicadores
+    // Estado o flag (por ejemplo "OK", "SOSP", etc.)
     private String estado;
 
-    // Getters y Setters (necesarios para JPA y JSON/de-serialization)
+    // Relación uno a uno con la tabla alertas (una transacción puede tener una alerta)
+    @OneToOne(mappedBy = "transaccion", cascade = CascadeType.ALL)
+    private Alerta alerta;
 
-    public String getIdTransaccion() {
+    // ----- Getters y Setters -----
+
+    public Long getIdTransaccion() {
         return idTransaccion;
     }
 
-    public void setIdTransaccion(String idTransaccion) {
+    public void setIdTransaccion(Long idTransaccion) {
         this.idTransaccion = idTransaccion;
     }
 
-    public String getUserId() {
-        return userId;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public BigDecimal getMonto() {
@@ -93,9 +97,4 @@ public class Transaccion {
     public String getEstado() {
         return estado;
     }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
-    }
 }
-
