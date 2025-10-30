@@ -17,6 +17,20 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 
 // Iconos
 import { Shield, Menu, Bell, Download, LayoutDashboard, AlertTriangle, ListFilter, Settings, Home } from "lucide-react";
+function resolveBackendEndpoint() {
+  if (CONFIGURED_BASE) {
+    return `${CONFIGURED_BASE}/alerts`;
+  }
+
+  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+    return "http://127.0.0.1:8001/alerts";
+  }
+
+  return null;
+}
+
+const BACKEND_ENDPOINT = resolveBackendEndpoint();
+const FALLBACK_ENDPOINT = "/alerts.json";
 
 export default function App() {
   // ✅ Lógica del equipo

@@ -1,42 +1,72 @@
 package com.transacciones.transaction_ingestor.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.transacciones.transaction_ingestor.model.Transaccion;
+import com.transacciones.transaction_ingestor.model.Usuario;
 import com.transacciones.transaction_ingestor.repository.TransactionRepository;
+import com.transacciones.transaction_ingestor.repository.UsuarioRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Contiene la lógica de negocio.
- * Implementa la simulación de streaming (Requisito 4) y llama al repositorio para guardar.
- */
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 @Service
 public class TransactionService {
 
     private final TransactionRepository transactionRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final ObjectMapper objectMapper;
 
-    @Autowired
-    public TransactionService(TransactionRepository transactionRepository) {
+    public TransactionService(TransactionRepository transactionRepository,
+                              UsuarioRepository usuarioRepository,
+                              ObjectMapper objectMapper) {
         this.transactionRepository = transactionRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.objectMapper = objectMapper;
     }
 
-    /**
-     * Procesa la transacción: simula la ingesta en streaming y guarda en la DB.
-     */
+    @Transactional
     public Transaccion ingestAndSave(Transaccion transaction) {
-        // --- Punto 4: Simulación de "Streaming" ---
-        System.out.println("-----------------------------------------------------------------------");
-        System.out.println("🤖 SIMULACIÓN DE STREAMING DE DATOS RECIBIDA:");
-        System.out.printf("  ID: %s | User: %s | Monto: %s | Ubicación: %s%n",
-                          transaction.getIdTransaccion(),
-                          transaction.getUserId(),
-                          transaction.getMonto(),
-                          transaction.getUbicacion());
-        System.out.println("  Datos validados y listos para persistencia.");
-        System.out.println("-----------------------------------------------------------------------");
+        // Log “streaming” (tu salida actual)
+        System.out.println("\n---------------------------------------------");
+        System.out.printf("🛰️  SIMULACIÓN DE STREAMING DE DATOS RECIBIDA:%n" +
+                          "ID: %s | User: %s | Monto: %s | Ubicación: %s%n",
+                transaction.getIdTransaccion(),
+                transaction.getIdUsuario(),
+                transaction.getMonto(),
+                (transaction.getLatitud() != null && transaction.getLongitud() != null)
+                        ? transaction.getLatitud() + "," + transaction.getLongitud()
+                        : "N/A");
+        System.out.println("✅  Datos validados y listos para persistencia.");
+        System.out.println("---------------------------------------------\n");
 
-        // --- Punto 3: Guardar la transacción en MySQL (JPA) ---
+        // 1) Resolver/crear Usuario a partir de idUsuario (del JSON)
+        String idUsuario = transaction.getIdUsuario();
+        if (idUsuario == null || idUsuario.isBlank()) {
+            throw new IllegalArgumentException("idUsuario es obligatorio");
+        }
+
+        Usuario usuario = usuarioRepository.findById(idUsuario)
+                .orElseGet(() -> {
+                    Usuario u = new Usuario();
+                    u.setIdUsuario(idUsuario);
+                    // Defaults simples; podés ajustarlos
+                    u.setPais(transaction.getPais()); // o "AR" si viene null
+                    u.setFechaCreacion(Timestamp.valueOf(LocalDateTime.now()));
+                    u.setEstadoCuenta("activa");
+                    return usuarioRepository.save(u);
+                });
+
+        // 2) Setear la relación en la Transaccion
+        transaction.setUsuario(usuario);
+
+        // 3) Guardar el JSON crudo (útil para auditoría)
+        try {
+            transaction.setRawJson(objectMapper.writeValueAsString(transaction));
+        } catch (Exception ignore) { /* opcional: loggear */ }
+
+        // 4) Persistir
         return transactionRepository.save(transaction);
     }
 }
-

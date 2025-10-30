@@ -1,46 +1,34 @@
 package com.transacciones.transaction_ingestor.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
+@Table(name = "usuarios")
 public class Usuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idUsuario;
+    @Column(name = "id_usuario", length = 64)
+    @NotBlank
+    private String idUsuario;
 
-    @Column(nullable = false)
-    private String pais;
+    @Column(name = "pais", length = 2)
+    private String pais; // AR, BR...
 
-    private Boolean estado_usuario;
+    @Column(name = "estado_cuenta", length = 20)
+    private String estadoCuenta = "activa"; // activa/suspendida/cerrada
 
-    // Getters y Setters
-    public Long getIdUsuario() {
-        return idUsuario;
-    }
+    @Column(name = "fecha_creacion", nullable = false,
+            columnDefinition = "timestamp default current_timestamp")
+    private java.sql.Timestamp fechaCreacion;
 
-    public void setIdUsuario(Long idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
-    public String getPais() {
-        return pais;
-    }
-
-    public void setPais(String pais) {
-        this.pais = pais;
-    }
-
-    public Boolean getEstado_usuario() {
-        return estado_usuario;
-    }
-
-    public void setEstado_usuario(Boolean estado_usuario) {
-        this.estado_usuario = estado_usuario;
-    }
+    /* getters/setters */
+    public String getIdUsuario() { return idUsuario; }
+    public void setIdUsuario(String idUsuario) { this.idUsuario = idUsuario; }
+    public String getPais() { return pais; }
+    public void setPais(String pais) { this.pais = pais; }
+    public String getEstadoCuenta() { return estadoCuenta; }
+    public void setEstadoCuenta(String estadoCuenta) { this.estadoCuenta = estadoCuenta; }
+    public java.sql.Timestamp getFechaCreacion() { return fechaCreacion; }
+    public void setFechaCreacion(java.sql.Timestamp fechaCreacion) { this.fechaCreacion = fechaCreacion; }
 }
-
