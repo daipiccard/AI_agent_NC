@@ -50,3 +50,16 @@ services:
       KAFKA_CLUSTERS_0_NAME: local
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
       KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+
+  kafka-init-topics:
+    image: confluentinc/cp-kafka:7.6.1
+    container_name: ia-agent-kafka-init-topics
+    depends_on:
+      kafka:
+        condition: service_healthy
+    command: >-
+      bash -c "
+        kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic transacciones --partitions 1 --replication-factor 1 &&
+        kafka-topics --bootstrap-server kafka:29092 --create --if-not-exists --topic alertas --partitions 1 --replication-factor 1
+      "
+    restart: "no"
