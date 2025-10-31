@@ -25,4 +25,13 @@ public interface TransactionRepository extends JpaRepository<Transaccion, String
     // Ejemplo con @Query: mínimo monto + orden por fecha
     @Query("SELECT t FROM Transaccion t WHERE t.monto >= :min ORDER BY t.timestampTransaccion DESC")
     List<Transaccion> findRecentWithMinAmount(@Param("min") BigDecimal min);
+    // ========================================
+    // NUEVOS MÉTODOS PARA KAFKA - AGREGAR AQUÍ
+    // ========================================
+    // Buscar por estado (para transacciones validadas/rechazadas)
+    // List<Transaccion> findByEstado(String estado);
+    
+    // // Buscar por usuario y estado
+    // List<Transaccion> findByUsuario_IdUsuarioAndEstado(String idUsuario, String estado);
+
 }
