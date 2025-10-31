@@ -39,10 +39,15 @@ function Slider({
     >
       <SliderPrimitive.Track
         data-slot="slider-track"
-        className={cn(
-          "bg-muted relative grow overflow-hidden rounded-full data-[orientation=horizontal]:h-4 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5",
-        )}
-      >
+          className={cn(
+            // track: línea base del slider
+            "relative grow overflow-hidden rounded-full",
+            "data-[orientation=horizontal]:h-2 data-[orientation=horizontal]:w-full",
+            "data-[orientation=vertical]:h-full data-[orientation=vertical]:w-2",
+            // color base visible (ajusta según tu tema)
+            "bg-gray-300 dark:bg-gray-700"
+      )}
+    >
         <SliderPrimitive.Range
           data-slot="slider-range"
           className={cn(
