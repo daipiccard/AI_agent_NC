@@ -43,6 +43,36 @@
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
 
+		<!-- ======================================== -->
+		<!-- INICIO: DEPENDENCIAS DE KAFKA -->
+		<!-- ======================================== -->
+		<!-- Spring Kafka: Integración de Kafka con Spring Boot -->
+		<dependency>
+		<groupId>org.springframework.kafka</groupId>
+<artifactId>spring-kafka</artifactId>
+</dependency>
+
+<!-- Kafka Clients: Cliente nativo de Apache Kafka -->
+<dependency>
+<groupId>org.apache.kafka</groupId>
+<artifactId>kafka-clients</artifactId>
+</dependency>
+
+<!-- Jackson Databind: Para serialización/deserialización de JSON -->
+<dependency>
+<groupId>com.fasterxml.jackson.core</groupId>
+<artifactId>jackson-databind</artifactId>
+</dependency>
+
+<!-- Jackson JSR310: Soporte para tipos de Java 8 como LocalDateTime -->
+<dependency>
+<groupId>com.fasterxml.jackson.datatype</groupId>
+<artifactId>jackson-datatype-jsr310</artifactId>
+</dependency>
+<!-- ======================================== -->
+<!-- FIN: DEPENDENCIAS DE KAFKA -->
+<!-- ======================================== -->
+
 	<dependency>
 		<groupId>com.mysql</groupId>
 		<artifactId>mysql-connector-j</artifactId>
@@ -59,6 +89,18 @@
 		<artifactId>spring-boot-starter-test</artifactId>
 		<scope>test</scope>
 	</dependency>
+	<!-- ======================================== -->
+<!-- INICIO: TESTING DE KAFKA -->
+<!-- ======================================== -->
+<!-- Spring Kafka Test: Herramientas para testing con Kafka embebido -->
+<dependency>
+<groupId>org.springframework.kafka</groupId>
+<artifactId>spring-kafka-test</artifactId>
+<scope>test</scope>
+</dependency>
+<!-- ======================================== -->
+<!-- FIN: TESTING DE KAFKA -->
+<!-- ======================================== -->
 	</dependencies>
 
 	<build>
