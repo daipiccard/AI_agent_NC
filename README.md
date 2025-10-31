@@ -26,7 +26,7 @@ Panel mínimo para visualizar transacciones y su estado (OK / SOSPECHOSA).
 ## Cómo correr en local
 
 ### Opción 1 — Con mock de json-server
-1. En una terminal (raíz del proyecto):  npx json-server --watch db.json --port 8000
+1. En una terminal (raíz del proyecto):  npx json-server --watch db.json --port 8001
 Endpoint: `http://127.0.0.1:8000/alerts`
 
 2. En otra terminal: npm install   npm run dev

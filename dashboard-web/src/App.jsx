@@ -1,7 +1,254 @@
+// import React, { useState, useEffect } from "react";
+// import "./index.css";          // tu CSS principal dentro de src
+// import "./myStyles/globals.css"; // mi CSS del Figma, ruta correcta
+// const ENDPOINT = "/alerts.json"; // o "http://127.0.0.1:8000/alerts
+
+// // Componentes Figma
+// import { Button } from "./components/ui/button";
+// import { Badge } from "./components/ui/badge";
+// import { FraudStats } from "./components/FraudStats";
+// import { FraudChart } from "./components/FraudChart";
+// import { AlertsPanel } from "./components/AlertsPanel";
+// import { TransactionsTable } from "./components/TransactionsTable";
+// import { ConfigPanel } from "./components/ConfigPanel";
+// import { RiskDistribution } from "./components/RiskDistribution";
+// import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./components/ui/sheet";
+
+
+// // Iconos
+// import { Shield, Menu, Bell, Download, LayoutDashboard, AlertTriangle, ListFilter, Settings, Home } from "lucide-react";
+// const CONFIGURED_BASE = (import.meta.env.VITE_ALERTS_BASE_URL || "")
+//   .trim()
+//   .replace(/\/$/, "");
+
+// function resolveBackendEndpoint() {
+//   if (CONFIGURED_BASE) {
+//     return `${CONFIGURED_BASE}/alerts`;
+//   }
+
+//   if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+//     return "http://127.0.0.1:8001/alerts";
+//   }
+
+//   return null;
+// }
+
+// const BACKEND_ENDPOINT = resolveBackendEndpoint();
+// const FALLBACK_ENDPOINT = "/alerts.json";
+
+// export default function App() {
+//   // ✅ Lógica del equipo
+//   const [items, setItems] = useState([]);
+//   const [status, setStatus] = useState("Listo");
+//   const [error, setError] = useState("");
+
+//   async function fetchAlerts() {
+//     setStatus("Cargando…");
+//     setError("");
+//     try {
+//       const res = await fetch("/alerts.json");
+//       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+//       const data = await res.json();
+//       const arr = Array.isArray(data) ? data : data.items || data.alerts || [];
+//       setItems(arr);
+//       setStatus("Actualizado");
+//     } catch (e) {
+//       setError(`Error al consultar: ${e.message}`);
+//       setStatus("Error");
+//     }
+//   }
+
+//   useEffect(() => {
+//     fetchAlerts();
+//     const t = setInterval(fetchAlerts, 5000);
+//     return () => clearInterval(t);
+//   }, []);
+
+//   const fmtMoney = (v) =>
+//     new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 })
+//       .format(Number(v) || 0);
+
+//   function estadoClass(bandera, sospechosa) {
+//     const s = (bandera ?? (sospechosa ? "sospechoso" : "ok")).toString().toLowerCase();
+//     if (s.includes("sosp")) return "pill estado-sospechosa";
+//     if (s.includes("review")) return "pill estado-review";
+//     return "pill estado-ok";
+//   }
+
+//   function EstadoPill({ bandera, sospechosa }) {
+//     const cls = estadoClass(bandera, sospechosa);
+//     const label = cls.includes("sospechosa") ? "SOSPECHOSA" : cls.includes("review") ? "REVIEW" : "OK";
+//     return <span className={cls} data-test="estado-pill">{label}</span>;
+//   }
+
+//   // ✅ Lógica del menú Figma
+//   const [menuOpen, setMenuOpen] = useState(false);
+//   const scrollToSection = (id) => {
+//     const el = document.getElementById(id);
+//     if (el) {
+//       el.scrollIntoView({ behavior: "smooth", block: "start" });
+//       setMenuOpen(false);
+//     }
+//   };
+
+//   const menuItems = [
+//     { id: "dashboard", label: "Panel de Monitoreo", icon: <Home className="h-5 w-5" /> },
+//     { id: "analytics", label: "Análisis y Gráficos", icon: <LayoutDashboard className="h-5 w-5" /> },
+//     { id: "alerts", label: "Alertas Activas", icon: <AlertTriangle className="h-5 w-5" /> },
+//     { id: "transactions", label: "Transacciones", icon: <ListFilter className="h-5 w-5" /> },
+//     { id: "config", label: "Configuración", icon: <Settings className="h-5 w-5" /> },
+//   ];
+
+//   // ✅ JSX Figma + tabla de alertas del equipo integrada
+//   return (
+//     <div className="min-h-screen bg-background">
+//       {/* Header */}
+//       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+//         <div className="container flex h-16 items-center justify-between gap-3 px-4">
+//           <div className="flex items-center gap-2 md:gap-3 min-w-0">
+//             <div className="flex items-center justify-center h-9 w-9 md:h-10 md:w-10 rounded-lg bg-primary text-primary-foreground flex-shrink-0">
+//               <Shield className="h-5 w-5 md:h-6 md:w-6" />
+//             </div>
+//             <div className="min-w-0">
+//               <h1 className="text-base md:text-lg truncate">FraudGuard AI</h1>
+//               <p className="text-xs text-muted-foreground hidden sm:block">Sistema de Detección de Fraude</p>
+//             </div>
+//           </div>
+          
+//           <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
+//           <Badge variant="outline" className="gap-2 hidden lg:flex items-center">
+//           <span className="relative flex h-2 w-2">
+//             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+//             <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+//           </span>
+//           Sistema Activo
+//           </Badge>
+//             <Button variant="ghost" size="icon" className="relative h-9 w-9 md:h-10 md:w-10">
+//               <Bell className="h-4 w-4 md:h-5 md:w-5" />
+//               <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive"></span>
+//             </Button>
+            
+//             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+//               <SheetTrigger asChild>
+//                 <Button variant="outline" size="icon" className="h-9 w-9 md:h-10 md:w-10">
+//                   <Menu className="h-4 w-4 md:h-5 md:w-5" />
+//                 </Button>
+//               </SheetTrigger>
+//               <SheetContent>
+//                 <SheetHeader>
+//                   <SheetTitle className="flex items-center gap-2">
+//                     <Shield className="h-5 w-5 text-primary" />
+//                     FraudGuard AI
+//                   </SheetTitle>
+//                   <SheetDescription>
+//                     Navegación del sistema
+//                   </SheetDescription>
+//                 </SheetHeader>
+                
+//                 <nav className="mt-8 space-y-2">
+//                   {menuItems.map((item) => (
+//                     <button
+//                       key={item.id}
+//                       onClick={() => scrollToSection(item.id)}
+//                       className="w-full flex items-center gap-3 rounded-lg px-3 py-3 text-left transition-colors hover:bg-accent hover:text-accent-foreground"
+//                     >
+//                       <span className="text-muted-foreground">{item.icon}</span>
+//                       <span>{item.label}</span>
+//                     </button>
+//                   ))}
+//                 </nav>
+//               </SheetContent>
+//             </Sheet>
+//           </div>
+//         </div>
+//       </header>
+
+//       {/* Main Content */}
+//       <main className="container mx-auto p-6 space-y-6">
+//         {/* Stats Overview */}
+//         <div id="dashboard" className="scroll-mt-20">
+//           <div className="flex items-center justify-between">
+//             <div>
+//               <h2>Panel de Monitoreo</h2>
+//               <p className="text-sm text-muted-foreground mt-1">
+//                 Visualización en tiempo real de actividad y detecciones
+//               </p>
+//             </div>
+//             <Button variant="outline" className="gap-2 hidden sm:flex">
+//               <Download className="h-4 w-4" />
+//               Exportar Reporte
+//             </Button>
+//           </div>
+
+//           <div className="mt-6">
+//             <FraudStats />
+//           </div>
+//         </div>
+
+//         {/* Charts Section */}
+//         <div id="analytics" className="flex gap-6 md:grid-cols-7 scroll-mt-20">
+//           <FraudChart />
+//           <RiskDistribution />
+//         </div>
+
+//         {/* Alerts Section (tabla del equipo) */}
+//         <div id="alerts" className="grid gap-6 md:grid-cols-7 scroll-mt-20">
+//           <AlertsPanel />
+//           <div id="transactions" className="col-span-3 scroll-mt-20">
+//         <table className="bg-card text-card-foreground border border-gray-300 rounded-xl overflow-hidden shadow-sm w-full border-collapse">
+//   <thead className="bg-gray-100">
+//     <tr className="border-b border-gray-300">
+//       <th className="px-4 py-2 text-left">ID</th>
+//       <th className="px-4 py-2 text-left">Monto</th>
+//       <th className="px-4 py-2 text-left">Fecha</th>
+//       <th className="px-4 py-2 text-left">Hora</th>
+//       <th className="px-4 py-2 text-left">Ubicación</th>
+//       <th className="px-4 py-2 text-left">Estado</th>
+//     </tr>
+//   </thead>
+//   <tbody>
+//     {items.length === 0 ? (
+//       <tr>
+//         <td colSpan="6" className="text-center text-muted-foreground py-4">Sin datos…</td>
+//       </tr>
+//     ) : (
+//       items.map((it, i) => {
+//         const id = it.id || it.tx_id || "-";
+//         const monto = fmtMoney(it.monto);
+//         const fecha = it.fecha || "-";
+//         const hora = it.hora || "-";
+//         const ubic = it.ubicacion || it.pais || "-";
+//         return (
+//           <tr key={i} className="border-t border-gray-300 hover:bg-gray-50 transition-colors">
+//             <td className="px-4 py-2">{id}</td>
+//             <td className="px-4 py-2">{monto}</td>
+//             <td className="px-4 py-2">{fecha}</td>
+//             <td className="px-4 py-2">{hora}</td>
+//             <td className="px-4 py-2">{ubic}</td>
+//             <td className="px-4 py-2">
+//               <EstadoPill bandera={it.bandera} sospechosa={it.sospechosa} />
+//             </td>
+//           </tr>
+//         );
+//       })
+//     )}
+//   </tbody>
+// </table>
+//           </div>
+//         </div>
+
+//         {/* Config Panel */}
+//         <div id="config" className="grid gap-6 md:grid-cols-7 scroll-mt-20">
+//           <ConfigPanel />
+//         </div>
+//       </main>
+//     </div>
+//   );
+// }
+
 import React, { useState, useEffect } from "react";
-import "./index.css";          // tu CSS principal dentro de src
-import "./myStyles/globals.css"; // mi CSS del Figma, ruta correcta
-const ENDPOINT = "/alerts.json"; // o "http://127.0.0.1:8000/alerts
+import "./index.css";
+import "./myStyles/globals.css";
 
 // Componentes Figma
 import { Button } from "./components/ui/button";
@@ -9,65 +256,82 @@ import { Badge } from "./components/ui/badge";
 import { FraudStats } from "./components/FraudStats";
 import { FraudChart } from "./components/FraudChart";
 import { AlertsPanel } from "./components/AlertsPanel";
-import { TransactionsTable } from "./components/TransactionsTable";
 import { ConfigPanel } from "./components/ConfigPanel";
 import { RiskDistribution } from "./components/RiskDistribution";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "./components/ui/sheet";
 
-
 // Iconos
-import { Shield, Menu, Bell, Download, LayoutDashboard, AlertTriangle, ListFilter, Settings, Home } from "lucide-react";
+import {
+  Shield,
+  Menu,
+  Bell,
+  Download,
+  LayoutDashboard,
+  AlertTriangle,
+  ListFilter,
+  Settings,
+  Home,
+} from "lucide-react";
+
+// 🔹 Detecta el backend automáticamente según entorno
 const CONFIGURED_BASE = (import.meta.env.VITE_ALERTS_BASE_URL || "")
   .trim()
   .replace(/\/$/, "");
 
 function resolveBackendEndpoint() {
-  if (CONFIGURED_BASE) {
+  if (CONFIGURED_BASE)
     return `${CONFIGURED_BASE}/alerts`;
-  }
 
   if (typeof window !== "undefined" && window.location.hostname === "localhost") {
-    return "http://127.0.0.1:8001/alerts";
+    // ⚙️ Ajusta este puerto según el backend Java
+    return "http://localhost:8000/alerts";
   }
 
-  return null;
+  return "/alerts"; // fallback genérico
 }
 
 const BACKEND_ENDPOINT = resolveBackendEndpoint();
-const FALLBACK_ENDPOINT = "/alerts.json";
 
 export default function App() {
-  // ✅ Lógica del equipo
+  // ✅ Estado del equipo
   const [items, setItems] = useState([]);
   const [status, setStatus] = useState("Listo");
   const [error, setError] = useState("");
 
+  // ✅ Fetch a Java/MySQL
   async function fetchAlerts() {
     setStatus("Cargando…");
     setError("");
     try {
-      const res = await fetch("/alerts.json");
+      const res = await fetch(BACKEND_ENDPOINT);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
       const data = await res.json();
       const arr = Array.isArray(data) ? data : data.items || data.alerts || [];
       setItems(arr);
       setStatus("Actualizado");
     } catch (e) {
-      setError(`Error al consultar: ${e.message}`);
+      console.error("❌ Error al obtener alertas:", e);
+     setError(`Error al consultar: ${e.message}`);
       setStatus("Error");
     }
   }
 
   useEffect(() => {
     fetchAlerts();
-    const t = setInterval(fetchAlerts, 5000);
-    return () => clearInterval(t);
+    const interval = setInterval(fetchAlerts, 5000); // Actualiza cada 5s
+    return () => clearInterval(interval);
   }, []);
 
+  // ✅ Formato dinero
   const fmtMoney = (v) =>
-    new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 })
-      .format(Number(v) || 0);
+    new Intl.NumberFormat("es-AR", {
+      style: "currency",
+      currency: "ARS",
+      maximumFractionDigits: 0,
+    }).format(Number(v) || 0);
 
+  // ✅ Estado visual
   function estadoClass(bandera, sospechosa) {
     const s = (bandera ?? (sospechosa ? "sospechoso" : "ok")).toString().toLowerCase();
     if (s.includes("sosp")) return "pill estado-sospechosa";
@@ -78,10 +342,14 @@ export default function App() {
   function EstadoPill({ bandera, sospechosa }) {
     const cls = estadoClass(bandera, sospechosa);
     const label = cls.includes("sospechosa") ? "SOSPECHOSA" : cls.includes("review") ? "REVIEW" : "OK";
-    return <span className={cls} data-test="estado-pill">{label}</span>;
+    return (
+      <span className={cls} data-test="estado-pill">
+        {label}
+      </span>
+    );
   }
 
-  // ✅ Lógica del menú Figma
+  // ✅ Menú lateral (Figma)
   const [menuOpen, setMenuOpen] = useState(false);
   const scrollToSection = (id) => {
     const el = document.getElementById(id);
@@ -99,7 +367,7 @@ export default function App() {
     { id: "config", label: "Configuración", icon: <Settings className="h-5 w-5" /> },
   ];
 
-  // ✅ JSX Figma + tabla de alertas del equipo integrada
+  // ✅ JSX principal
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -111,23 +379,26 @@ export default function App() {
             </div>
             <div className="min-w-0">
               <h1 className="text-base md:text-lg truncate">FraudGuard AI</h1>
-              <p className="text-xs text-muted-foreground hidden sm:block">Sistema de Detección de Fraude</p>
+              <p className="text-xs text-muted-foreground hidden sm:block">
+                Sistema de Detección de Fraude
+              </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2 md:gap-4 flex-shrink-0">
-          <Badge variant="outline" className="gap-2 hidden lg:flex items-center">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-          </span>
-          Sistema Activo
-          </Badge>
+            <Badge variant="outline" className="gap-2 hidden lg:flex items-center">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              Sistema Activo
+            </Badge>
+
             <Button variant="ghost" size="icon" className="relative h-9 w-9 md:h-10 md:w-10">
               <Bell className="h-4 w-4 md:h-5 md:w-5" />
               <span className="absolute top-1 right-1 h-2 w-2 rounded-full bg-destructive"></span>
             </Button>
-            
+
             <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="outline" size="icon" className="h-9 w-9 md:h-10 md:w-10">
@@ -140,11 +411,9 @@ export default function App() {
                     <Shield className="h-5 w-5 text-primary" />
                     FraudGuard AI
                   </SheetTitle>
-                  <SheetDescription>
-                    Navegación del sistema
-                  </SheetDescription>
+                  <SheetDescription>Navegación del sistema</SheetDescription>
                 </SheetHeader>
-                
+
                 <nav className="mt-8 space-y-2">
                   {menuItems.map((item) => (
                     <button
@@ -163,9 +432,9 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main Content */}
+      {/* Main */}
       <main className="container mx-auto p-6 space-y-6">
-        {/* Stats Overview */}
+        {/* Dashboard */}
         <div id="dashboard" className="scroll-mt-20">
           <div className="flex items-center justify-between">
             <div>
@@ -185,59 +454,57 @@ export default function App() {
           </div>
         </div>
 
-        {/* Charts Section */}
+        {/* Gráficos */}
         <div id="analytics" className="flex gap-6 md:grid-cols-7 scroll-mt-20">
           <FraudChart />
           <RiskDistribution />
         </div>
 
-        {/* Alerts Section (tabla del equipo) */}
+        {/* Alertas y Transacciones */}
         <div id="alerts" className="grid gap-6 md:grid-cols-7 scroll-mt-20">
           <AlertsPanel />
           <div id="transactions" className="col-span-3 scroll-mt-20">
-        <table className="bg-card text-card-foreground border border-gray-300 rounded-xl overflow-hidden shadow-sm w-full border-collapse">
-  <thead className="bg-gray-100">
-    <tr className="border-b border-gray-300">
-      <th className="px-4 py-2 text-left">ID</th>
-      <th className="px-4 py-2 text-left">Monto</th>
-      <th className="px-4 py-2 text-left">Fecha</th>
-      <th className="px-4 py-2 text-left">Hora</th>
-      <th className="px-4 py-2 text-left">Ubicación</th>
-      <th className="px-4 py-2 text-left">Estado</th>
-    </tr>
-  </thead>
-  <tbody>
-    {items.length === 0 ? (
-      <tr>
-        <td colSpan="6" className="text-center text-muted-foreground py-4">Sin datos…</td>
-      </tr>
-    ) : (
-      items.map((it, i) => {
-        const id = it.id || it.tx_id || "-";
-        const monto = fmtMoney(it.monto);
-        const fecha = it.fecha || "-";
-        const hora = it.hora || "-";
-        const ubic = it.ubicacion || it.pais || "-";
-        return (
-          <tr key={i} className="border-t border-gray-300 hover:bg-gray-50 transition-colors">
-            <td className="px-4 py-2">{id}</td>
-            <td className="px-4 py-2">{monto}</td>
-            <td className="px-4 py-2">{fecha}</td>
-            <td className="px-4 py-2">{hora}</td>
-            <td className="px-4 py-2">{ubic}</td>
-            <td className="px-4 py-2">
-              <EstadoPill bandera={it.bandera} sospechosa={it.sospechosa} />
-            </td>
-          </tr>
-        );
-      })
-    )}
-  </tbody>
-</table>
+            <table className="bg-card text-card-foreground border border-gray-300 rounded-xl overflow-hidden shadow-sm w-full border-collapse">
+              <thead className="bg-gray-100">
+                <tr className="border-b border-gray-300">
+                  <th className="px-4 py-2 text-left">ID</th>
+                  <th className="px-4 py-2 text-left">Monto</th>
+                  <th className="px-4 py-2 text-left">Fecha</th>
+                  <th className="px-4 py-2 text-left">Hora</th>
+                  <th className="px-4 py-2 text-left">Ubicación</th>
+                  <th className="px-4 py-2 text-left">Estado</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" className="text-center text-muted-foreground py-4">
+                      Sin datos…
+                    </td>
+                  </tr>
+                ) : (
+                  items.map((it, i) => (
+                    <tr
+                      key={i}
+                      className="border-t border-gray-300 hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-4 py-2">{it.id || "-"}</td>
+                      <td className="px-4 py-2">{fmtMoney(it.monto)}</td>
+                      <td className="px-4 py-2">{it.fecha || "-"}</td>
+                      <td className="px-4 py-2">{it.hora || "-"}</td>
+                      <td className="px-4 py-2">{it.ubicacion || it.pais || "-"}</td>
+                      <td className="px-4 py-2">
+                        <EstadoPill bandera={it.bandera} sospechosa={it.sospechosa} />
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        {/* Config Panel */}
+        {/* Configuración */}
         <div id="config" className="grid gap-6 md:grid-cols-7 scroll-mt-20">
           <ConfigPanel />
         </div>
